@@ -1,0 +1,20 @@
+FROM python:3
+
+ENV config /usr/src/app/config.ini
+ENV loglevel DEBUG
+
+WORKDIR /usr/src/app
+
+
+RUN pip3 install paho-mqtt schema requests jsonschema
+
+COPY agents/mapper mapper
+COPY agents/Agent.py agents/Agent.py
+COPY agents/_packages agents/_packages
+
+COPY sock sock
+COPY helpers helpers
+
+COPY Mapper.py ./
+
+CMD ["sh", "-c", "python3 ./Mapper.py -l $loglevel -f $config -td $things -ad $adapters"]

@@ -1,0 +1,82 @@
+[
+    {
+		"name": "Private LoRaWAN",
+        "uuid": "urn:uuid:cc0c1e3b-ce09-4c44-b9da-57ee9871497a",
+        "adapterType": "input/output"
+    },
+    {
+		"name": "The Things Network",
+        "uuid": "urn:uuid:5538dbf2-06df-40e6-8f89-cc51ba54ec65",
+        "adapterType": "input/output"
+    },
+    {
+		"name": "Sigfox",
+        "uuid": "urn:uuid:489edd56-4b1c-4332-a5ba-cad14994668d",
+        "adapterType": "input/output"
+    },
+    {
+		"name": "Localization Engine",
+        "uuid": "urn:uuid:8b6092c2-09a4-4aca-aca2-2948195c10de",
+        "adapterType": "processing"
+    },
+    {
+        "name": "SCHC Router",
+        "uuid": "urn:uuid:1323b31a-1af7-4548-aad7-89f45f7b5713",
+        "adapterType": "input/output"
+    },
+	{
+		"name": "Virtual Device Manager",
+        "uuid": "urn:uuid:bb81f583-e276-4886-842d-bfc4764d4b8d",
+        "adapterType": "input/output"
+	},
+	{
+		"name": "Obelisk",
+        "uuid": "urn:uuid:5b932ad6-52da-49d4-bfdd-4f67321c5f34",
+        "adapterType": "input/output"
+	},
+    {
+        "name": "Leshan Adapter",
+        "uuid": "urn:uuid:1b8a927a-98b3-48a8-afe1-f72baa462a0b",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8000",
+        "uuid": "urn:uuid:4c960148-31ac-4de7-bada-918a99bdc29f",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8001",
+        "uuid": "urn:uuid:bb015887-aa9b-43be-8d9f-ee520a6d5fe5",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8002",
+        "uuid": "urn:uuid:110b5e58-02ff-41c2-a6ea-5b7189eb5bd4",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8003",
+        "uuid": "urn:uuid:326fa278-10e1-4917-b098-50dfa25be974",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8004",
+        "uuid": "urn:uuid:031ab9bb-1ef3-455d-9330-22c99a131bab",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "LoRaWAN Simulator 8005",
+        "uuid": "urn:uuid:0aee7eb9-ff8f-4858-9418-e5f2c16ee5e4",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "HTTP Simulator",
+        "uuid": "urn:uuid:f927f1bd-477e-4f99-bc3b-7734d81dd863",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "Dummy Adapter",
+        "uuid": "urn:uuid:a94095b6-ca50-4990-b2ec-5da8c5a84795",
+        "adapterType": "processing"
+    }
+]

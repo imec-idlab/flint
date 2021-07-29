@@ -1,0 +1,50 @@
+{
+  	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"required": [
+	    "device-ctrl",
+	    "adapter-ctrl"
+	],
+	"properties": {
+		"device-ctrl": {
+			"type": "object",
+			"required": [
+			    "dev-eui",
+			    "data"
+			],
+			"properties": {
+				"dev-eui": { "type": "string" },
+				"data": { "type":"string" },
+				"device-custom-ctrl": { "type": "object" }
+			}
+		},
+		"input-ctrl": {
+			"type": "object",
+			"properties": {
+				"input-type": { "type": "string" },
+				"input-custom-ctrl": { "type": "object" }
+			}
+		},
+		"output-ctrl": {
+			"type": "object",
+			"required": [
+			    "thing-id",
+			    "ipv6"
+			],
+			"properties": {
+				"thing-id": { "type": "string" },
+				"ipv6": { "type": "string" },
+				"output-custom-ctrl": { "type": "array", "contains": { "type" : "object" } }
+			}
+		},
+		"adapter-ctrl": {
+			"type": "object",
+			"required": [
+			    "from"
+			],
+			"properties": {
+				"from" : { "type": "string" }
+			}
+		}
+	}
+}

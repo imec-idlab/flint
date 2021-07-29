@@ -1,0 +1,66 @@
+FROM ubuntu:18.04
+
+ENV config sink/conf/adapter_conf.ini
+ENV loglevel DEBUG
+
+WORKDIR /usr/src/app
+
+# Set noninteractive installation
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y \
+	&& apt-get install -y nginx git python-setuptools python-dev software-properties-common \
+	&& apt-add-repository universe \
+	&& apt-get update -y \
+	&& apt-get install -y curl
+
+RUN curl -o libc6_2.28.deb http://ftp.de.debian.org/debian/pool/main/c/cross-toolchain-base/libc6-armhf-cross_2.28-7cross1_all.deb \
+    && dpkg -i libc6_2.28.deb
+
+##### Install paho-required libraries #####
+
+RUN apt-get update \
+	&& apt-get install software-properties-common \
+	&& apt-add-repository universe \
+	&& apt-get install -y build-essential cmake libmbedtls-dev wget libssl-dev clang \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/eclipse/paho.mqtt.c.git
+
+USER root
+
+##### BUILD PAHO #####
+
+RUN cd paho.mqtt.c \
+    && make \
+    && make install \
+    && cd ..
+
+RUN git clone https://github.com/DaveGamble/cJSON.git
+
+##### BUILD CJSON #####
+
+RUN cd cJSON \
+	&& mkdir build \
+	&& cd build \
+	&& cmake .. \
+	&& make \
+	&& make install \
+	&& cd ../..
+
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+RUN ldconfig /usr/local/lib
+
+COPY sink.c sink.c
+COPY sink sink
+COPY sock sock
+
+##### BUILD INIH #####
+RUN cd sink \
+	git clone https://github.com/benhoyt/inih.git \
+	cd ..
+
+RUN gcc -L /usr/local/lib -o sink.exe sink.c sink/conf_parser.c sink/inih/ini.c sink/print.c sink/mqtt_handler.c sock/socket_server.c -lpaho-mqtt3c -lcjson
+
+##### Start the Sink #####
+CMD ["sh", "-c", "./sink.exe $config $loglevel"]

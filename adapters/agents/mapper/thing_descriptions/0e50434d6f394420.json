@@ -1,0 +1,40 @@
+{
+	"id": "urn:uuid:7e8be48e-2cb7-4187-8100-7228851bd8b9",
+	"@context": "https://www.w3.org/2019/wot/td/v1",
+	"title": "PortForward1",
+	"description": "UAntwerpen Low Power Tracker Device",
+	"securityDefinitions": {
+		"basic_sc": {
+			"scheme": "basic",
+			"in": "header"
+		}
+	},
+	"ipv6": [ 
+		"2a02:1810:3d1c:1000::4", "2a02:1810:3d1c:1000:0:0:0:4"
+	],
+    "ioAdapterDefinitions": [
+		{ 	
+			"uuid": "urn:uuid:5538dbf2-06df-40e6-8f89-cc51ba54ec65",
+			"deviceDefinitions": {
+            	"mac": "0e50434d6f394420",
+				"interfaceType": "uplink_triggered",
+            	"networkDefinitions": {
+                	"fport": 10
+            	}
+        	}
+		}
+    ],
+    "adapterScheme": [
+		[
+			["urn:uuid:5538dbf2-06df-40e6-8f89-cc51ba54ec65"],
+			["urn:uuid:8b6092c2-09a4-4aca-aca2-2948195c10de"],
+			["urn:uuid:5b932ad6-52da-49d4-bfdd-4f67321c5f34"]
+		]
+    ],
+	"security": [
+		"basic_sc"
+	],
+	"properties": {},
+	"actions": {},
+	"events": {}
+}

@@ -1,0 +1,41 @@
+{
+	"id": "urn:uuid:7efd1ab2-20d7-4202-8b8d-7c5391876ede",
+	"@context": "https://www.w3.org/2019/wot/td/v1",
+	"title": "AbeewayMicroTracker",
+	"description": "Abeeway Micro Tracker",
+	"securityDefinitions": {
+		"basic_sc": {
+			"scheme": "basic",
+			"in": "header"
+		}
+	},
+	"ipv6": [ "2001:6a8:1d80:2031::0" ],
+    "ioAdapterDefinitions": [
+		{ 	
+			"uuid": "urn:uuid:cc0c1e3b-ce09-4c44-b9da-57ee9871497a",
+			"deviceDefinitions": {
+            	"mac": "20635f0108001725",
+				"interfaceType": "uplink_triggered",
+            	"networkDefinitions": {
+                	"fport": 2
+            	}
+        	}
+		}
+    ],
+    "adapterScheme": [
+		[
+			["urn:uuid:cc0c1e3b-ce09-4c44-b9da-57ee9871497a"],
+			["urn:uuid:bb81f583-e276-4886-842d-bfc4764d4b8d"]
+		],
+    	[
+    		["urn:uuid:1b8a927a-98b3-48a8-afe1-f72baa462a0b"],
+    		["urn:uuid:5b932ad6-52da-49d4-bfdd-4f67321c5f34"]
+    	]
+    ],
+	"security": [
+		"basic_sc"
+	],
+	"properties": {},
+	"actions": {},
+	"events": {}
+}

@@ -1,0 +1,44 @@
+{
+	"id": "urn:uuid:631e5bba-a103-4c6e-a831-42c2eca871c2",
+	"@context": "https://www.w3.org/2019/wot/td/v1",
+	"title": "SimulatorDevice3",
+	"description": "Simulated LoRaWAN Device",
+	"securityDefinitions": {
+		"basic_sc": {
+			"scheme": "basic",
+			"in": "header"
+		}
+	},
+	"ipv6": [
+		"2a02:1810:3d1c:1000:0:0:0:0"
+	],
+    "ioAdapterDefinitions": [
+		{ 	
+			"uuid": "urn:uuid:110b5e58-02ff-41c2-a6ea-5b7189eb5bd4",
+			"deviceDefinitions": {
+            	"mac": "0000000000008002",
+				"downlinkType": "continuous",
+            	"networkDefinitions": {
+                	"fport": 10
+            	}
+        	}
+		}
+    ],
+    "adapterScheme": [
+		[
+			["urn:uuid:110b5e58-02ff-41c2-a6ea-5b7189eb5bd4"],
+			["urn:uuid:a94095b6-ca50-4990-b2ec-5da8c5a84795"],
+			["urn:uuid:f927f1bd-477e-4f99-bc3b-7734d81dd863"]
+		],
+		[
+			["urn:uuid:f927f1bd-477e-4f99-bc3b-7734d81dd863"],
+			["urn:uuid:110b5e58-02ff-41c2-a6ea-5b7189eb5bd4"]
+		]
+    ],
+	"security": [
+		"basic_sc"
+	],
+	"properties": {},
+	"actions": {},
+	"events": {}
+}

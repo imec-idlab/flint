@@ -1,0 +1,46 @@
+FROM ubuntu:18.04
+
+ENV config agents/udp/conf/adapter_conf.ini
+ENV loglevel DEBUG
+
+WORKDIR /usr/src/app
+
+# Set noninteractive installation
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y \
+	&& apt-get install -y nginx git python-setuptools python-dev software-properties-common \
+	&& apt-add-repository universe \
+	&& apt-get update -y \
+	&& apt-get install -y curl
+
+RUN curl -o libc6_2.28.deb http://ftp.de.debian.org/debian/pool/main/c/cross-toolchain-base/libc6-armhf-cross_2.28-7cross1_all.deb \
+    && dpkg -i libc6_2.28.deb
+
+##### install required libraries #####
+
+RUN apt-get update \
+	&& apt-get install software-properties-common \
+	&& apt-add-repository universe \
+	&& apt-get install -y build-essential cmake libmbedtls-dev wget libssl-dev clang \
+        && rm -rf /var/lib/apt/lists/*
+
+USER root
+
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+RUN ldconfig /usr/local/lib
+
+COPY udp_agent.c udp_agent.c
+COPY sink sink
+COPY sock sock
+COPY agents agents
+
+##### BUILD INIH #####
+RUN cd sink \
+	git clone https://github.com/benhoyt/inih.git \
+	cd ..
+
+RUN gcc -L /usr/local/lib -o udp_agent.exe udp_agent.c sink/conf_parser.c sink/print.c sink/inih/ini.c sock/socket_client.c -lpthread
+
+##### Start the Sink #####
+CMD ["sh", "-c", "./udp_agent.exe $config $loglevel"]
