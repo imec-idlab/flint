@@ -8,6 +8,7 @@ This example sets up a local example using three flint components:
 **NOTE**
 
 This example requires two MQTT brokers: 1 (port 8000) listening for LoRa traffic (MQTT) and 1 (port 8001) serving as a message bus for the flint system.
+
 ---
 
 ## Run the example
