@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udp-adapter
+  labels:
+    app: udp-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udp-adapter
+  template:
+    metadata:
+      labels:
+        app: udp-adapter
+    spec:
+      containers:
+      - name: sink
+        image: gitlab.ilabt.imec.be:4567/bamoons/vno:sink
+        imagePullPolicy: Always
+        env:
+          - name: config
+            value: "sink/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "DEBUG"
+        volumeMounts:
+          - name: conf-udp
+            mountPath: /usr/src/app/sink/conf
+          - name: sock
+            mountPath: /sock
+      - name: udp-adapter
+        image: gitlab.ilabt.imec.be:4567/bamoons/vno:udp-adapter
+        imagePullPolicy: Always
+        env:
+          - name: config
+            value: "agents/udp/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "DEBUG"
+        volumeMounts:
+          - name: conf-udp
+            mountPath: /usr/src/app/agents/udp/conf
+          - name: sock
+            mountPath: /sock
+      imagePullSecrets:
+      - name: vno
+      volumes:
+      - name: conf-udp
+        hostPath:
+          path: /users/bart/vno/adapters/agents/udp/conf/
+      - name: sock
+        emptyDir: {}

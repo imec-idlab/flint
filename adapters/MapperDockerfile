@@ -1,7 +1,9 @@
 FROM python:3
 
-ENV config /usr/src/app/config.ini
+ENV config mapper/conf/adapter_conf.ini
 ENV loglevel DEBUG
+ENV things mapper/thing_descriptions
+ENV adapters mapper/adapter_definitions.json
 
 WORKDIR /usr/src/app
 
@@ -16,5 +18,8 @@ COPY sock sock
 COPY helpers helpers
 
 COPY Mapper.py ./
+
+RUN ls
+RUN ls mapper
 
 CMD ["sh", "-c", "python3 ./Mapper.py -l $loglevel -f $config -td $things -ad $adapters"]

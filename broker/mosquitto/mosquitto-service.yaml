@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-service
+spec:
+  selector:
+    app: mosquitto-broker
+  ports:
+    - protocol: TCP
+      name: mqtt-1883
+      port: 1883
+      targetPort: 1883
+  type: LoadBalancer
+  externalIPs:
+  - 193.190.127.207

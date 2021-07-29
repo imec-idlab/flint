@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels: 
+    app: mosquitto-broker
+  name: mosquitto-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels: 
+      app: mosquitto-broker
+  template:
+    metadata:
+      labels: 
+        app: mosquitto-broker
+    spec:
+      containers:
+      - image: eclipse-mosquitto:latest
+        name: mosquitto-broker-1883
+        ports:
+        - containerPort: 1883
+        volumeMounts:
+        - name: conf-1883
+          mountPath: /mosquitto/config/mosquitto.conf
+      volumes:
+      - name: conf-1883
+        hostPath:
+          path: /users/bart/vno/broker/mosquitto/mosquitto-1883.conf
