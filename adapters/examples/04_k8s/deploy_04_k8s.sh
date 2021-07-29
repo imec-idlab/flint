@@ -4,19 +4,18 @@
 if [[ "$@" =~ --help ]]; then
   echo 'Use this script to create secrets and/or deploy docker images from the container registry'
   echo '--create-secrets [create secrets to access private docker registries]'
-  echo '--deploy [apply deplyoment files]'
+  echo '--deploy-broker [apply broker deployment files]'
+  echo '--deploy-adapters [apply deplyoment files]'
   exit
 fi
 
-if [[ "$@" =~ --create-secrets ]]; then
-	# create secrets to access private registries
+if [[ "$@" =~ --deploy-broker ]]; then
+	# deploy the mosquitto broker
+	sudo microk8s kubectl apply -f ../../../broker/mosquitto/mosquitto-deployment.yaml
+	sudo microk8s kubectl apply -f ../../../broker/mosquitto/mosquitto-service.yaml
 fi
 
-if [[ "$@" =~ --deploy ]]; then
-	# deploy the mosquitto broker
-	sudo microk8s kubectl apply -f ../../broker/mosquitto/mosquitto-deployment.yaml
-	sudo microk8s kubectl apply -f ../../broker/mosquitto/mosquitto-service.yaml
-
+if [[ "$@" =~ --deploy-adapters ]]; then
 	# deploy the mapper
 	sudo microk8s kubectl apply -f mapper/deployment.yaml
 	# deploy the lora adapter
@@ -24,8 +23,4 @@ if [[ "$@" =~ --deploy ]]; then
 	# deploy the udp adapter
 	sudo microk8s kubectl apply -f udp/deployment.yaml
 
-fi
-
-if [[ "$@" =~ --deploy-simulation ]]; then
-	sudo microk8s kubectl apply -f ../adapters/agents/simulator
 fi

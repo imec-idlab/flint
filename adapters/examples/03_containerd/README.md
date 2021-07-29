@@ -1,5 +1,10 @@
 # 03_containerd
-This example walks through the flow to containerize (parts of) the application.
+This example sets up a local example using four containerized flint components:
+1. LoRa adapter - MQTT client listening for packets on a broker (port 8000) and forwarding these to the UDP adapter
+2. mosquitto - MQTT broker that serves as message bus
+3. Mapper adapter - Mapper instance forwarding traffic between flint components
+4. UDP adapter - UDP client forwarding traffic to a UDP server
+
 
 ## Build Docker containers
 First install `Docker` using the provided bootscript

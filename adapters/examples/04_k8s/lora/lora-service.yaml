@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+   name: lora-service
+spec:
+   clusterIP: None
+   ports:
+   - protocol: TCP
+     port: 8000
+     targetPort: 8000
+   selector:  
+     name:  lora-service-example
+   type: ClusterIP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: lora-service
+subsets:
+  - addresses:
+    - ip: 10.152.183.5
+    ports:
+      - port: 8000

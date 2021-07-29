@@ -30,7 +30,7 @@ sudo ufw allow in on cni0 && sudo ufw allow out on cni0
 sudo apt-get install -y snapd
 sudo snap install microk8s --classic
 sudo microk8s status --wait-ready
-sudo microk8s enable dashboard dns
+sudo microk8s enable dashboard dns registry
 sudo microk8s start
 
 sudo sh ./deploy_04_k8s.sh

@@ -14,9 +14,10 @@ spec:
       labels:
         app: lora-adapter
     spec:
+      hostNetwork: true
       containers:
       - name: sink
-        image: gitlab.ilabt.imec.be:4567/bamoons/vno:sink
+        image: localhost:32000/flint:sink
         imagePullPolicy: Always
         env:
           - name: config
@@ -29,16 +30,16 @@ spec:
           - name: sock
             mountPath: /sock
       - name: lora-adapter
-        image: gitlab.ilabt.imec.be:4567/bamoons/vno:lora-adapter
+        image: localhost:32000/flint:lora-adapter
         imagePullPolicy: Always
         env:
           - name: config
-            value: "lora/conf/adapter_conf.ini"
+            value: "agents/lora/conf/adapter_conf.ini"
           - name: loglevel
             value: "DEBUG"
         volumeMounts:
           - name: conf-lora
-            mountPath: /usr/src/app/lora/conf
+            mountPath: /usr/src/app/agents/lora/conf
           - name: sock
             mountPath: /sock
       imagePullSecrets:
@@ -46,6 +47,6 @@ spec:
       volumes:
       - name: conf-lora
         hostPath:
-          path: /users/bart/vno/adapters/agents/lora/conf/
+          path: /home/boortmans/Nextcloud/flint/flint/adapters/examples/04_k8s/lora/conf/
       - name: sock
         emptyDir: {}

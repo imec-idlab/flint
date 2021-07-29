@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
       - image: eclipse-mosquitto:latest
-        name: mosquitto-broker-1883
+        name: mosquitto-broker-8001
         ports:
-        - containerPort: 1883
+        - containerPort: 8001
         volumeMounts:
-        - name: conf-1883
+        - name: conf-8001
           mountPath: /mosquitto/config/mosquitto.conf
       volumes:
-      - name: conf-1883
+      - name: conf-8001
         hostPath:
-          path: /users/bart/vno/broker/mosquitto/mosquitto-1883.conf
+          path: /home/boortmans/Nextcloud/flint/flint/broker/mosquitto/mosquitto-8001.conf
