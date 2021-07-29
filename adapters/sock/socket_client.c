@@ -15,8 +15,6 @@ int socket_client_send(udp_client* cl, char* message, int len) {
     
     server_address_size = sizeof(cl->server);
 
-    printf("%d\n", cl->s);
-
     rc = send(cl->s, message, len, 0);
 
     return rc;

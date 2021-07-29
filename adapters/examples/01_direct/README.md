@@ -65,7 +65,7 @@ Run the UDP sink and the UDP agent
 ./sink.exe examples/01_direct/udp/conf/adapter_conf.ini DEBUG
 
 > 2021-07-28 10:33:33: starting Sink, press 'ctrl' + 'c' to quit
-> 2021-07-28 10:33:33: loaded config file examples/01_direct/lora/conf/adapter_conf.ini
+> 2021-07-28 10:33:33: loaded config file examples/01_direct/udp/conf/adapter_conf.ini
 > ...
 ```
 
