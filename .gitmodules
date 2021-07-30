@@ -1,0 +1,3 @@
+[submodule "adapters/sink/inih"]
+	path = adapters/sink/inih
+	url = https://github.com/benhoyt/inih.git
