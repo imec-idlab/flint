@@ -8,7 +8,7 @@ If you are going to build FLINT yourself, you should clone all submodules too
 git clone --recurse-submodules --remote-submodules https://github.com/imec-idlab/flint.git
 ```
 
-See the [examples](/adapters/examples) and [our evaluation paper](http://hdl.handle.net/1854/LU-8613162) for more information on the implemenation and configuration.
+See the [examples](/adapters/examples) and [our evaluation paper](https://doi.org/10.3390/app11199303) for more information on the implemenation and configuration.
 
 ### ACKNOWLEDGEMENT
 
