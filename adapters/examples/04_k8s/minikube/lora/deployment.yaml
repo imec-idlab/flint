@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lora-adapter
+  labels:
+    app: lora-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lora-adapter
+  template:
+    metadata:
+      labels:
+        app: lora-adapter
+    spec:
+      hostNetwork: true
+      containers:
+      - name: sink
+        image: localhost:5000/flint:sink
+        imagePullPolicy: Always
+        env:
+          - name: config
+            value: "sink/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "DEBUG"
+        volumeMounts:
+          - name: conf-lora
+            mountPath: /usr/src/app/sink/conf
+          - name: sock
+            mountPath: /sock
+      - name: lora-adapter
+        image: localhost:5000/flint:lora-adapter
+        imagePullPolicy: Always
+        env:
+          - name: config
+            value: "agents/lora/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "DEBUG"
+        volumeMounts:
+          - name: conf-lora
+            mountPath: /usr/src/app/agents/lora/conf
+          - name: sock
+            mountPath: /sock
+      imagePullSecrets:
+      - name: vno
+      volumes:
+      - name: conf-lora
+        hostPath:
+          path: /home/boortmans/Nextcloud/flint/flint/adapters/examples/04_k8s/lora/conf/
+      - name: sock
+        emptyDir: {}

@@ -57,8 +57,8 @@ COPY sock sock
 
 ##### BUILD INIH #####
 RUN cd sink \
-	git clone https://github.com/benhoyt/inih.git \
-	cd ..
+	&& git clone https://github.com/benhoyt/inih.git \
+	&& cd ..
 
 RUN gcc -L /usr/local/lib -o sink.exe sink.c sink/conf_parser.c sink/inih/ini.c sink/print.c sink/mqtt_handler.c sock/socket_server.c -lpaho-mqtt3c -lcjson
 

@@ -58,8 +58,8 @@ COPY agents agents
 
 ##### BUILD INIH #####
 RUN cd sink \
-	git clone https://github.com/benhoyt/inih.git \
-	cd ..
+	&& git clone https://github.com/benhoyt/inih.git \
+	&& cd ..
 
 RUN gcc -L /usr/local/lib -o lora_agent.exe lora_agent.c sink/conf_parser.c sink/print.c sink/inih/ini.c sink/mqtt_handler.c sock/socket_client.c sink/flint_parser.c -lpaho-mqtt3c -lcjson
 

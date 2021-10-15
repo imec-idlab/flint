@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapper
+  labels:
+    app: mapper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mapper
+  template:
+    metadata:
+      labels:
+        app: mapper
+    spec:
+      containers:
+      - name: sink
+        image: localhost:5000/flint:sink
+        imagePullPolicy: Always
+        stdin: true
+        tty: true
+        env:
+          - name: config
+            value: "sink/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "ERROR"
+        volumeMounts:
+          - name: conf-mapper
+            mountPath: /usr/src/app/sink/conf
+          - name: sock
+            mountPath: /sock
+      - name: mapper
+        image: localhost:5000/flint:mapper
+        imagePullPolicy: Always
+        env:
+          - name: config
+            value: "mapper/conf/adapter_conf.ini"
+          - name: loglevel
+            value: "ERROR"
+          - name: things
+            value: "mapper/thing_descriptions"
+          - name: adapters
+            value: "mapper/adapter_definitions.json"
+        volumeMounts:
+          - name: conf-mapper
+            mountPath: /usr/src/app/mapper/conf
+          - name: thing-descriptions
+            mountPath: /usr/src/app/mapper/thing_descriptions
+          - name: adapter-definitions
+            mountPath: /usr/src/app/mapper/
+          - name: sock
+            mountPath: /sock
+      imagePullSecrets:
+      - name: vno
+      volumes:
+      - name: conf-mapper
+        hostPath:
+          path: /home/boortmans/Nextcloud/flint/flint/adapters/examples/04_k8s/mapper/conf/
+      - name: thing-descriptions
+        hostPath:
+          path: /home/boortmans/Nextcloud/flint/flint/adapters/examples/04_k8s/mapper/thing_descriptions/
+      - name: adapter-definitions
+        hostPath:
+          path: /home/boortmans/Nextcloud/flint/flint/adapters/examples/04_k8s/mapper/
+      - name: sock
+        emptyDir: {}

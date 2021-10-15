@@ -10,6 +10,7 @@ spec:
       name: mqtt-8001
       port: 8001
       targetPort: 8001
+      nodePort: 8001
   type: LoadBalancer
   externalIPs:
   - 192.186.0.1

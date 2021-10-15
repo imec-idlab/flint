@@ -1,0 +1,22 @@
+[
+    {
+		"name": "Private LoRaWAN",
+        "uuid": "urn:uuid:4c960148-31ac-4de7-bada-918a99bdc29f",
+        "adapterType": "input/output"
+    },
+    {
+		"name": "Sigfox",
+        "uuid": "urn:uuid:489edd56-4b1c-4332-a5ba-cad14994668d",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "UDP Adapter",
+        "uuid": "urn:uuid:f927f1bd-477e-4f99-bc3b-7734d81dd863",
+        "adapterType": "input/output"
+    },
+    {
+        "name": "Dummy Adapter",
+        "uuid": "urn:uuid:a94095b6-ca50-4990-b2ec-5da8c5a84795",
+        "adapterType": "processing"
+    }
+]
