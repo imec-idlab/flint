@@ -58,6 +58,7 @@ class BasicHttpAgent(IOAgent, ABC):
         self.logger = logging.getLogger('BasicHttpAgent')
 
         self.connection = None
+        self.headers = {}
 
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         def __init__(self, adapter, *args):
@@ -114,8 +115,11 @@ class BasicHttpAgent(IOAgent, ABC):
         self.on_disconnect()
 
     def connect(self, *args):
-        if ping(self.connection_ip):
-            self.on_connect()
+        # if ping(self.connection_ip):
+        self.on_connect()
+
+    def set_headers(self, headers):
+        self.headers = headers
 
     def basic_auth(self, uri):
         self.connection = HTTPSConnection(f"{self.connection_ip}:{self.port}")
@@ -198,15 +202,15 @@ class BasicHttpAgent(IOAgent, ABC):
     def send_message(self, uri, msg, method):
         self.connection = HTTPConnection(host=self.connection_ip, port=self.port, timeout=128)
         try:
-            self.connection.request(method, f'/{uri}', body=msg)
+            self.connection.request(method, f'/{uri}', body=msg, headers=self.headers)
             res = self.connection.getresponse()
             data = res.read()
 
-            self.logger.debug(data)
+            self.logger.debug(method + " " + uri + " returned " + str(res.status))
 
             self.connection.close()
 
-            return res.status
+            return res.status, data
         except Exception as e:
             self.logger.error("failed to parse or send message: " + str(e))
 
