@@ -35,7 +35,7 @@ sudo docker run --rm -it --name=LoRaAgent --network host -v /home/../flint/adapt
 ### the Mapper middleware
 First, run the Mapper sink:
 ```
-sudo docker run --rm -it --name=MapperSink --network host -v /home/boortmans/Nextcloud/flint/flint/adapters/examples/03_containerd/mapper/conf/adapter_conf.ini:/usr/src/app/sink/conf/adapter_conf.ini -e config=sink/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:sink
+sudo docker run --rm -it --name=MapperSink --network host -v /home/.../flint/adapters/examples/03_containerd/mapper/conf/adapter_conf.ini:/usr/src/app/sink/conf/adapter_conf.ini -e config=sink/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:sink
 ```
 
 Next, run the Mapper agent. Simply copy the complete `mapper` folder to the container to inject thing descriptions, adapter definitions and configuration files.
@@ -46,12 +46,12 @@ sudo docker run --rm -it --name=MapperAdapter --network host -v /home/../flint/a
 ### the Northbound interface
 First, run the UDP sink:
 ```
-sudo docker run --rm -it --name=UdpSink --network host -v /home/boortmans/Nextcloud/flint/flint/adapters/examples/03_containerd/udp/conf/adapter_conf.ini:/usr/src/app/sink/conf/adapter_conf.ini -e config=sink/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:sink
+sudo docker run --rm -it --name=UdpSink --network host -v /home/.../flint/adapters/examples/03_containerd/udp/conf/adapter_conf.ini:/usr/src/app/sink/conf/adapter_conf.ini -e config=sink/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:sink
 ```
 
 Next, run the UDP agent:
 ```
-sudo docker run --rm -it --name=UdpAgent --network host -v /home/boortmans/Nextcloud/flint/flint/adapters/examples/03_containerd/udp/conf/adapter_conf.ini:/usr/src/app/agents/udp/conf/adapter_conf.ini -e config=agents/udp/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:udp-adapter
+sudo docker run --rm -it --name=UdpAgent --network host -v /home/.../flint/adapters/examples/03_containerd/udp/conf/adapter_conf.ini:/usr/src/app/agents/udp/conf/adapter_conf.ini -e config=agents/udp/conf/adapter_conf.ini -e loglevel=DEBUG localhost:50000/flint:udp-adapter
 ```
 
 Finally, open a `nc` window:
