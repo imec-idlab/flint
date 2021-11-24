@@ -14,6 +14,7 @@
 #define UUID_LEN    45
 
 udp_client*     sink;
+mqtt_handle*    lora_mq;    
 char            printd_buf[2048];
 char*           config_file = NULL;
 int             is_socket_connected = 0;
@@ -74,13 +75,42 @@ static void mqtt_callback(char* message, int len, char* topic) {
 }
 
 static void socket_receive_callback(char* message, int len, char* topic) {
-    sprintf(printd_buf, "received message on socket: %s\n", message);
-    // todo
-    // downlink
-}
+    cJSON *tree = NULL;
+    tree = cJSON_Parse(message);
+    if(tree) {
+        cJSON* chirpstack_tree = cJSON_CreateObject();
+        if(chirpstack_tree) {
+            cJSON* ack = cJSON_CreateFalse();
+            cJSON_AddItemToObject(chirpstack_tree, "confirmed", ack);
 
-static void *sink_socket() {
+            cJSON* input_ctrl = cJSON_GetObjectItem(tree, "input-ctrl");
+            cJSON* input_custom_ctrl = cJSON_GetObjectItem(input_ctrl, "input-custom-ctrl");
 
+            cJSON* dev_eui = cJSON_GetObjectItem(input_custom_ctrl, "mac");
+            char* eui = dev_eui->valuestring;
+
+            cJSON* network_definitions = cJSON_GetObjectItem(input_custom_ctrl, "networkDefinitions");
+            cJSON* fport = cJSON_GetObjectItem(network_definitions, "fport");
+            cJSON_AddItemToObject(chirpstack_tree, "fPort", fport);
+
+            cJSON* device_ctrl = cJSON_GetObjectItem(tree, "device-ctrl");
+            cJSON* data = cJSON_GetObjectItem(device_ctrl, "data");
+            cJSON_AddItemToObject(chirpstack_tree, "data", data);
+
+            char top[128];
+            sprintf(top, "application/%d/device/%s/command/down", config.agent.application_id, eui);
+
+            char* json_message = cJSON_PrintUnformatted(chirpstack_tree);
+
+            mqtt_publish(json_message, strlen(json_message), top, lora_mq, 0);
+            sprintf(printd_buf, "forwarded %s to LoRa network\n", json_message);
+            printd(printd_buf);
+            
+            free(json_message);
+        }
+
+        cJSON_Delete(chirpstack_tree);
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -117,6 +147,7 @@ int main(int argc, char* argv[]) {
     int rc = mqtt_connect(&lora);
     if(!rc) {
         rc = mqtt_subscribe(&lora);
+        lora_mq = &lora;
         if(!rc) {
             sprintf(printd_buf, "subscribed to topic %s with qos %d\n", lora.topic_sub, lora.qos);
             printd(printd_buf);
