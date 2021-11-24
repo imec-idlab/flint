@@ -47,18 +47,27 @@ void cleanup(_configuration* config, udp_client* cl) {
     }
 }
 
+/* 
+ * received a message from the LoRa network
+ */
 static void mqtt_callback(char* message, int len, char* topic) {
     cJSON *tree = NULL;
     tree = cJSON_Parse(message);
 
     if(tree) {
-        // create FLINT format
-
+        /* create FLINT format */
         cJSON* flint_tree = flint_build_tree();
 
-        flint_append_device_ctrl_from_chirpstack(flint_tree, tree);
-        flint_append_input_ctrl(flint_tree, tree, &config);
-        flint_append_adapter_ctrl(flint_tree, &config);
+        int err = flint_append_device_ctrl_from_chirpstack(flint_tree, tree);
+        err |= flint_append_input_ctrl(flint_tree, tree, &config);
+        err |= flint_append_adapter_ctrl(flint_tree, &config);
+        err |= flint_set_method(flint_tree, POST);
+
+        if (err) {
+            sprintf(printd_buf, "appending information failed \n");
+            printe(printd_buf);
+            return;
+        }
 
         char* json_message = cJSON_PrintUnformatted(flint_tree);
 
@@ -74,42 +83,53 @@ static void mqtt_callback(char* message, int len, char* topic) {
     cJSON_Delete(tree);
 }
 
+/* 
+ * received a message from the FLINT platform
+ */
 static void socket_receive_callback(char* message, int len, char* topic) {
     cJSON *tree = NULL;
     tree = cJSON_Parse(message);
     if(tree) {
-        cJSON* chirpstack_tree = cJSON_CreateObject();
-        if(chirpstack_tree) {
-            cJSON* ack = cJSON_CreateFalse();
-            cJSON_AddItemToObject(chirpstack_tree, "confirmed", ack);
+        /* forward to Chirpstack if method is POST */
+        enum METHOD method = flint_get_method(tree);
+        if(method == POST) {
+            cJSON* chirpstack_tree = cJSON_CreateObject();
+            if(chirpstack_tree) {
+                cJSON* ack = cJSON_CreateFalse();
+                cJSON_AddItemToObject(chirpstack_tree, "confirmed", ack);
 
-            cJSON* input_ctrl = cJSON_GetObjectItem(tree, "input-ctrl");
-            cJSON* input_custom_ctrl = cJSON_GetObjectItem(input_ctrl, "input-custom-ctrl");
+                cJSON* input_ctrl = cJSON_GetObjectItem(tree, "input-ctrl");
+                cJSON* input_custom_ctrl = cJSON_GetObjectItem(input_ctrl, "input-custom-ctrl");
 
-            cJSON* dev_eui = cJSON_GetObjectItem(input_custom_ctrl, "mac");
-            char* eui = dev_eui->valuestring;
+                cJSON* dev_eui = cJSON_GetObjectItem(input_custom_ctrl, "mac");
+                char* eui = dev_eui->valuestring;
 
-            cJSON* network_definitions = cJSON_GetObjectItem(input_custom_ctrl, "networkDefinitions");
-            cJSON* fport = cJSON_GetObjectItem(network_definitions, "fport");
-            cJSON_AddItemToObject(chirpstack_tree, "fPort", fport);
+                cJSON* network_definitions = cJSON_GetObjectItem(input_custom_ctrl, "networkDefinitions");
+                cJSON* fport = cJSON_GetObjectItem(network_definitions, "fport");
+                cJSON_AddItemToObject(chirpstack_tree, "fPort", fport);
 
-            cJSON* device_ctrl = cJSON_GetObjectItem(tree, "device-ctrl");
-            cJSON* data = cJSON_GetObjectItem(device_ctrl, "data");
-            cJSON_AddItemToObject(chirpstack_tree, "data", data);
+                cJSON* device_ctrl = cJSON_GetObjectItem(tree, "device-ctrl");
+                cJSON* data = cJSON_GetObjectItem(device_ctrl, "data");
+                cJSON_AddItemToObject(chirpstack_tree, "data", data);
 
-            char top[128];
-            sprintf(top, "application/%d/device/%s/command/down", config.agent.application_id, eui);
+                char top[128];
+                sprintf(top, "application/%d/device/%s/command/down", config.agent.application_id, eui);
 
-            char* json_message = cJSON_PrintUnformatted(chirpstack_tree);
+                char* json_message = cJSON_PrintUnformatted(chirpstack_tree);
 
-            mqtt_publish(json_message, strlen(json_message), top, lora_mq, 0);
-            sprintf(printd_buf, "forwarded %s to LoRa network\n", json_message);
-            printd(printd_buf);
-            
-            free(json_message);
-        }
+                mqtt_publish(json_message, strlen(json_message), top, lora_mq, 0);
+                sprintf(printd_buf, "forwarded %s to LoRa network\n", json_message);
+                printd(printd_buf);
+                
+                free(json_message);
+            }
 
-        cJSON_Delete(chirpstack_tree);
+            cJSON_Delete(chirpstack_tree);
+        } else {
+            sprintf(printd_buf, "Did not receive method POST \n");
+            printe(printd_buf);
+            return;
+        } /* end if method == POST */
     }
 }
 

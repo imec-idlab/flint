@@ -242,13 +242,9 @@ class Mapper(Agent):
                     # active adapter not in chain
                     adapter_scheme = chain
 
-
-
             # add output ctrl for this thing
-            json_msg["output-ctrl"] = {
-                "ipv6": ipv6_address,
-                "thing-id": thing["id"]
-            }
+            json_msg["output-ctrl"]["ipv6"] = ipv6_address;
+            json_msg["output-ctrl"]["thing-id"] = thing["id"];
 
             # add input/output definitions for this thing
             if("ioDefinitions" in thing):
