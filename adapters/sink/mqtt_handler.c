@@ -34,9 +34,6 @@ void mqtt_delivered(void *context, MQTTClient_deliveryToken dt) {
 int mqtt_arrvd(void *context, char *topic_name, int topicLen, MQTTClient_message *message) {
     mqtt_handle* mq = (mqtt_handle*) context;
 
-    // add EOS to be sure
-    char* data = message->payload;
-    data[message->payloadlen] = '\0';
     (*mq->rx_cb)(message->payload, message->payloadlen, topic_name);
 
     MQTTClient_freeMessage(&message);
