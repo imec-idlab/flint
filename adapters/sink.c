@@ -54,7 +54,7 @@ static void mqtt_callback(char* message, int len, char* topic) {
     printd(printd_buf);
 
     cJSON *tree = NULL;
-    tree = cJSON_ParseWithLength(message);
+    tree = cJSON_ParseWithLength(message, len);
 
     if(tree) {
         // todo validate json structure
