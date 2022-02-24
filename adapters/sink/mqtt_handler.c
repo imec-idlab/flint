@@ -1,4 +1,4 @@
-#include <time.h>
+#include <sys/time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,14 +8,16 @@
 #include "mqtt_handler.h"
 #include "print.h"
 
-char            printd_buf[2048];
+char            mqtt_printd_buf[8192];
 
 void rand_str(char *dest, size_t length) {
     char charset[] = "0123456789"
                      "abcdefghijklmnopqrstuvwxyz"
                      "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    srand(time(0));
+    struct timeval time; 
+    gettimeofday(&time,NULL);
+    srand((time.tv_sec * 1000) + (time.tv_usec / 1000)); // use microseconds as seed when starting multiple applications per second
 
     while (length-- > 0) {
         size_t index = (double) rand() / RAND_MAX * (sizeof charset - 1);
@@ -26,8 +28,8 @@ void rand_str(char *dest, size_t length) {
 
 void mqtt_delivered(void *context, MQTTClient_deliveryToken dt) {
     mqtt_handle* mq = (mqtt_handle*) context;
-    sprintf(printd_buf, "Message with token value %d delivery confirmed\n", dt);
-    printd(printd_buf);
+    sprintf(mqtt_printd_buf, "Message with token value %d delivery confirmed\n", dt);
+    printd(mqtt_printd_buf);
     mq->deliveredtoken = dt;
 }
 

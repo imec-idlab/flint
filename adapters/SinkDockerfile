@@ -57,6 +57,7 @@ COPY sock sock
 
 ##### BUILD INIH #####
 RUN cd sink \
+	&& rm -rf inih \
 	&& git clone https://github.com/benhoyt/inih.git \
 	&& cd ..
 

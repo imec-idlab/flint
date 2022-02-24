@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include <cjson/cJSON.h>
+// #include <json.h>
 
 #include "sink/conf_parser.h"
 #include "sink/mqtt_handler.h"
@@ -17,7 +18,7 @@
 udp_server*     serv;
 mqtt_handle*    sink_mq;    
 bool            done = false;
-char            printd_buf[2048];
+char            sink_printd_buf[8192];
 char*           config_file = NULL;
 int             is_socket_connected = 0;
 char            sink_id[UUID_LEN];
@@ -36,8 +37,8 @@ int parse_arguments(int argc, char* argv[]) {
         return -1;
     }
     else {
-        sprintf(printd_buf, "%d arguments expected.\n", NUM_ARG);
-        printd(printd_buf);
+        sprintf(sink_printd_buf, "%d arguments expected.\n", NUM_ARG);
+        printd(sink_printd_buf);
         return -1;
     }
 }
@@ -50,14 +51,18 @@ void cleanup(_configuration* config, udp_server* udps) {
 }
 
 static void mqtt_callback(char* message, int len, char* topic) {
-    sprintf(printd_buf, "received message on topic %s \n", topic);
-    printd(printd_buf);
+    sprintf(sink_printd_buf, "received message on topic %s \n", topic);
+    printd(sink_printd_buf);
 
     cJSON *tree = NULL;
     tree = cJSON_ParseWithLength(message, len);
 
     if(tree) {
         // todo validate json structure
+        
+        // char* json_message = cJSON_PrintUnformatted(tree);
+        // int rc = socket_server_send(serv, json_message, len);
+        // free(json_message);
         
         int rc = socket_server_send(serv, message, len);
         cJSON_Delete(tree);
@@ -88,8 +93,8 @@ int publish_next_hops(cJSON* tree, char* message) {
                     copy_topic(hop, self->valuestring, "/in\0", 4);
                     mqtt_publish(message, strlen(message), hop, sink_mq, sink_mq->qos);
 
-                    sprintf(printd_buf, "forwarding message on topic %s\n", hop);
-                    printd(printd_buf);
+                    sprintf(sink_printd_buf, "forwarding message on topic %s\n", hop);
+                    printd(sink_printd_buf);
 
                     count++;
                 }
@@ -98,8 +103,8 @@ int publish_next_hops(cJSON* tree, char* message) {
             copy_topic(hop, config.sink.id, "/out\0", 5);
             mqtt_publish(message, strlen(message), hop, sink_mq, sink_mq->qos);
             
-            sprintf(printd_buf, "forwarding message on topic %s\n", hop);
-            printd(printd_buf);
+            sprintf(sink_printd_buf, "forwarding message on topic %s\n", hop);
+            printd(sink_printd_buf);
 
             count = 1;
         }
@@ -116,8 +121,8 @@ static void socket_receive_callback(char* message, int len, char* topic) {
             is_socket_connected = 1;
         }
     } else {
-        sprintf(printd_buf, "received message on socket: %s\n", message);
-        printd(printd_buf);
+        sprintf(sink_printd_buf, "received message on socket: %s\n", message);
+        printd(sink_printd_buf);
         int number_of_hops = 0;
         
         if(!strcmp(config.sink.type, "direct")) {
@@ -146,12 +151,12 @@ int main(int argc, char* argv[]) {
 
     // parse the .ini file
     if (parse_config_file(config_file, &config) < 0) {
-        sprintf(printd_buf, "can't load %s\n", config_file);
-        printe(printd_buf);
+        sprintf(sink_printd_buf, "can't load %s\n", config_file);
+        printe(sink_printd_buf);
         return 1;
     } else {
-        sprintf(printd_buf, "loaded config file %s\n", config_file);
-        printe(printd_buf);
+        sprintf(sink_printd_buf, "loaded config file %s\n", config_file);
+        printe(sink_printd_buf);
     }
 
     // init mqtt client
@@ -171,20 +176,20 @@ int main(int argc, char* argv[]) {
         .conn_opts = MQTTClient_connectOptions_initializer
     };
 
-    sprintf(printd_buf, "connecting to MQTT Message Bus on %s\n", config.sink.ip);
-    printe(printd_buf);
+    sprintf(sink_printd_buf, "connecting to MQTT Message Bus on %s\n", config.sink.ip);
+    printe(sink_printd_buf);
 
     int rc = mqtt_connect(&sink);
     if(!rc) {
         rc = mqtt_subscribe(&sink);
         sink_mq = &sink;
         if(!rc) {
-            sprintf(printd_buf, "subscribed client %s to topic %s with qos %d\n", sink.clientid, sink.topic_sub, config.sink.qos);
-            printe(printd_buf);
+            sprintf(sink_printd_buf, "subscribed client %s to topic %s with qos %d\n", sink.clientid, sink.topic_sub, config.sink.qos);
+            printe(sink_printd_buf);
         }
     } else {
-        sprintf(printd_buf, "failed to connect, return code %d\n", rc);
-        printe(printd_buf);
+        sprintf(sink_printd_buf, "failed to connect, return code %d\n", rc);
+        printe(sink_printd_buf);
         cleanup(&config, NULL);
         return 1;
     }

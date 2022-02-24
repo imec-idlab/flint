@@ -14,7 +14,7 @@
 
 udp_client*     udp;
 udp_client*     sink;
-char            printd_buf[2048];
+char            udp_print_buf[2048];
 char*           config_file = NULL;
 int             is_socket_connected = 0;
 char            sink_id[UUID_LEN];
@@ -33,8 +33,8 @@ int parse_arguments(int argc, char* argv[]) {
         return -1;
     }
     else {
-        sprintf(printd_buf, "%d arguments expected.\n", NUM_ARG);
-        printd(printd_buf);
+        sprintf(udp_print_buf, "%d arguments expected.\n", NUM_ARG);
+        printd(udp_print_buf);
         return -1;
     }
 }
@@ -47,15 +47,15 @@ void cleanup(_configuration* config, udp_client* cl) {
 }
 
 static void socket_receive_callback(char* message, int len, char* topic) {
-    sprintf(printd_buf, "received message on socket: %s\n", message);
-    printd(printd_buf);
+    sprintf(udp_print_buf, "received message on socket: %s\n", message);
+    printd(udp_print_buf);
 
     int rc = socket_client_send(udp, message, len); // simply forward to udp server
 }
 
 static void udp_receive_callback(char* message, int len, char* topic) {
-    sprintf(printd_buf, "received message on udp socket: %s\n", message);
-    printd(printd_buf);
+    sprintf(udp_print_buf, "received message on udp socket: %s\n", message);
+    printd(udp_print_buf);
 }
 
 int main(int argc, char* argv[]) {
@@ -69,12 +69,12 @@ int main(int argc, char* argv[]) {
 
     // parse the .ini file
     if (parse_config_file(config_file, &config) < 0) {
-        sprintf(printd_buf, "can't load %s\n", config_file);
-        printe(printd_buf);
+        sprintf(udp_print_buf, "can't load %s\n", config_file);
+        printe(udp_print_buf);
         return 1;
     } else {
-        sprintf(printd_buf, "loaded config file %s\n", config_file);
-        printd(printd_buf);
+        sprintf(udp_print_buf, "loaded config file %s\n", config_file);
+        printd(udp_print_buf);
     }
 
     // connect to sink

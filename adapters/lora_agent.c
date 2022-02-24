@@ -15,7 +15,7 @@
 
 udp_client*     sink;
 mqtt_handle*    lora_mq;    
-char            printd_buf[2048];
+char            lora_print_buf[8192];
 char*           config_file = NULL;
 int             is_socket_connected = 0;
 char            sink_id[UUID_LEN];
@@ -34,8 +34,8 @@ int parse_arguments(int argc, char* argv[]) {
         return -1;
     }
     else {
-        sprintf(printd_buf, "%d arguments expected.\n", NUM_ARG);
-        printd(printd_buf);
+        sprintf(lora_print_buf, "%d arguments expected.\n", NUM_ARG);
+        printd(lora_print_buf);
         return -1;
     }
 }
@@ -52,7 +52,7 @@ void cleanup(_configuration* config, udp_client* cl) {
  */
 static void mqtt_callback(char* message, int len, char* topic) {
     cJSON *tree = NULL;
-    tree = cJSON_Parse(message);
+    tree = cJSON_ParseWithLength(message, len);
 
     if(tree) {
         /* create FLINT format */
@@ -62,17 +62,18 @@ static void mqtt_callback(char* message, int len, char* topic) {
         err |= flint_append_input_ctrl(flint_tree, tree, &config);
         err |= flint_append_adapter_ctrl(flint_tree, &config);
         err |= flint_set_method(flint_tree, POST);
+        err |= flint_set_direction(flint_tree, UP);
 
         if (err) {
-            sprintf(printd_buf, "appending information failed \n");
-            printe(printd_buf);
+            sprintf(lora_print_buf, "appending information failed \n");
+            printe(lora_print_buf);
             return;
         }
 
         char* json_message = cJSON_PrintUnformatted(flint_tree);
 
-        sprintf(printd_buf, "forwarding message: %s\n", json_message);
-        printd(printd_buf);
+        sprintf(lora_print_buf, "forwarding message: %s\n", json_message);
+        printd(lora_print_buf);
 
         socket_client_send(sink, json_message, strlen(json_message));
         free(json_message);
@@ -88,7 +89,11 @@ static void mqtt_callback(char* message, int len, char* topic) {
  */
 static void socket_receive_callback(char* message, int len, char* topic) {
     cJSON *tree = NULL;
-    tree = cJSON_Parse(message);
+    
+    sprintf(lora_print_buf, "received message %s with length %d\n", message, len);
+    printd(lora_print_buf);
+    
+    tree = cJSON_ParseWithLength(message, len);
     if(tree) {
         /* forward to Chirpstack if method is POST */
         enum METHOD method = flint_get_method(tree);
@@ -118,16 +123,16 @@ static void socket_receive_callback(char* message, int len, char* topic) {
                 char* json_message = cJSON_PrintUnformatted(chirpstack_tree);
 
                 mqtt_publish(json_message, strlen(json_message), top, lora_mq, 0);
-                sprintf(printd_buf, "forwarded %s to LoRa network\n", json_message);
-                printd(printd_buf);
+                sprintf(lora_print_buf, "forwarded %s to LoRa network\n", json_message);
+                printd(lora_print_buf);
                 
                 free(json_message);
             }
 
             cJSON_Delete(chirpstack_tree);
         } else {
-            sprintf(printd_buf, "Did not receive method POST \n");
-            printe(printd_buf);
+            sprintf(lora_print_buf, "Did not receive method POST \n");
+            printe(lora_print_buf);
             return;
         } /* end if method == POST */
     }
@@ -144,12 +149,12 @@ int main(int argc, char* argv[]) {
 
     // parse the .ini file
     if (parse_config_file(config_file, &config) < 0) {
-        sprintf(printd_buf, "can't load %s\n", config_file);
-        printe(printd_buf);
+        sprintf(lora_print_buf, "can't load %s\n", config_file);
+        printe(lora_print_buf);
         return 1;
     } else {
-        sprintf(printd_buf, "loaded config file %s\n", config_file);
-        printd(printd_buf);
+        sprintf(lora_print_buf, "loaded config file %s\n", config_file);
+        printd(lora_print_buf);
     }
 
     // init mqtt client
@@ -162,19 +167,19 @@ int main(int argc, char* argv[]) {
         .conn_opts = MQTTClient_connectOptions_initializer
     };
 
-    sprintf(printd_buf, "connecting to LoRa network %s\n", config.agent.ip);
-    printd(printd_buf);
+    sprintf(lora_print_buf, "connecting to LoRa network %s\n", config.agent.ip);
+    printd(lora_print_buf);
     int rc = mqtt_connect(&lora);
     if(!rc) {
         rc = mqtt_subscribe(&lora);
         lora_mq = &lora;
         if(!rc) {
-            sprintf(printd_buf, "subscribed to topic %s with qos %d\n", lora.topic_sub, lora.qos);
-            printd(printd_buf);
+            sprintf(lora_print_buf, "subscribed to topic %s with qos %d\n", lora.topic_sub, lora.qos);
+            printd(lora_print_buf);
         }
     } else {
-        sprintf(printd_buf, "failed to connect, return code %d\n", rc);
-        printe(printd_buf);
+        sprintf(lora_print_buf, "failed to connect, return code %d\n", rc);
+        printe(lora_print_buf);
         cleanup(&config, NULL);
         free_mqtt_client(&lora);
         return 1;

@@ -21,6 +21,14 @@ static void print(char* msg) {
     printf("%s: %s", time_str, msg);
 }
 
+void print_char_buffer(char* buffer, int len) {
+    int i = 0;
+    for(i; i < len; i++) {
+        printf("%c", buffer[i]);
+    }
+    printf("\n");
+}
+
 void set_log_level(int lvl) {
     is_debug = lvl;
 }

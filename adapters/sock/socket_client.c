@@ -35,7 +35,7 @@ int socket_client_loop(udp_client* cl) {
 
     (*cl->socket_cb)(cl->buf, len, "");
 
-    return 0;
+    return len;
 }
 
 int socket_client_stop(udp_client* cl) {

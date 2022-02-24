@@ -167,7 +167,7 @@ class Mapper(Agent):
             for chain in scheme: # for every chain
                 for adapter in chain[0]: # get the adapters in the first shackle
                     if(adapter == adapter_id):
-                        chains.append(chain)
+                        chains.append(chain) # all chains that have adapter_id in the first shackle
         else:
             self.logger.error("no thing provided to get chains")
         return chains
@@ -198,16 +198,25 @@ class Mapper(Agent):
         direction = None
 
         if thing == None:
-            if("output-ctrl" in json_msg):
-                ipv6_address = json_msg["output-ctrl"]["ipv6"]
-                thing = self.get_thing_by_ipv6(ipv6_address)
-                direction = Direction.down
+            if("output-ctrl" in json_msg): # first case: request in downward direction from output adapter
+                if "ipv6" in json_msg["output-ctrl"]:
+                    ipv6_address = json_msg["output-ctrl"]["ipv6"]
+                    thing = self.get_thing_by_ipv6(ipv6_address)
+                    direction = Direction.down
                 if(thing == None):
                     self.logger.error("no device available for the given ipv6 address")
                     return
         else:
+            if "output-ctrl" in json_msg:
+                if "direction" in json_msg["output-ctrl"]:
+                    if json_msg["output-ctrl"]["direction"] == "DOWN": # second case: request from processing adapter in downward direction
+                        direction = Direction.down
+                    else: # third case: request from input adapter
+                        direction = Direction.up
+            else:
+                self.logger.debug("request from adapter without specified direction")
+            
             ipv6_address = "0:0:0:0:0:0:0:0"
-            direction = Direction.up
 
         # get chains that start with the requesting adapter
         adapter_scheme = []
@@ -218,10 +227,10 @@ class Mapper(Agent):
                 adapter_scheme = chain
                 self.set_active_input_adapter(dev_eui, adapter_id)
                 # todo
-                # downlink queue and downlink type
+                # check downlink type and flush downlink queue accordingly
             
             else: # request from output adapter
-                active_adapter = self.get_active_input_adapter(thing)
+                active_adapter = self.get_active_input_adapter(thing) # get the last active adapter
                 
                 if(self.adapter_in_chain(chain, active_adapter)): # active adapter part of the chain?
                     # todo check downlink queue

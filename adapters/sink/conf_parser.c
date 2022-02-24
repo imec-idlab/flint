@@ -32,6 +32,8 @@ int config_handler(void* config, const char* section, const char* name,
         pconfig->agent.topic_sub = strdup(value);
     } else if(MATCH("agent", "pub-topic")){ 
         pconfig->agent.topic_pub = strdup(value);
+    } else if(MATCH("agent", "application-id")){ 
+        pconfig->agent.application_id = atoi(value);
     } else if(MATCH("agent", "qos")){
         pconfig->agent.qos = atoi(value);
     } 

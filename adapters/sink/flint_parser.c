@@ -148,6 +148,29 @@ int flint_set_method(cJSON* flint_tree, enum METHOD method) {
     return 0;
 }
 
+int flint_set_direction(cJSON* flint_tree, enum DIRECTION direction) {
+	cJSON* output_ctrl = cJSON_GetObjectItem(flint_tree, "output-ctrl");
+
+	cJSON* dir;
+	switch(direction) {
+		case UP:
+    		dir = cJSON_CreateString("UP");
+    	break;
+		case DOWN:
+    		dir = cJSON_CreateString("DOWN");
+    	break;
+    	default:
+    		dir = cJSON_CreateString("UP");
+    	break;
+    }
+
+	if (dir != NULL) {
+    	cJSON_AddItemToObject(output_ctrl, "direction", dir);
+    }
+
+    return 0;
+}
+
 enum METHOD flint_get_method(cJSON* flint_tree) {
 	enum METHOD m = -1;
 

@@ -22,6 +22,7 @@ typedef struct {
     int port;
     const char* topic_sub;
     const char* topic_pub;
+    int application_id;
     int qos;
 } _agent;
 
