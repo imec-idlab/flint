@@ -58,12 +58,10 @@ static void mqtt_callback(char* message, int len, char* topic) {
 
     if(tree) {
         // todo validate json structure
-        char* json_message = cJSON_PrintUnformatted(tree);
-        int rc = socket_server_send(serv, json_message, strlen(json_message));
-        free(json_message);
+        
+        int rc = socket_server_send(serv, message, len);
+        cJSON_Delete(tree);
     }
-
-    cJSON_Delete(tree);
 }
 
 void copy_topic(char* dst, const char* uuid, char* suffix, int suffix_len) {
