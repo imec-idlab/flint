@@ -31,7 +31,7 @@ minikube kubectl -- proxy --address='0.0.0.0' --port=8080 --disable-filter=true
 ```
 
 Now open a browser on your remote host and go to:
-<your-host-external-ip>:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+<your-host-external-ip>:8080/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
 
 Add the folowing shell alias to get rid of the double dashed `minikube kubectl --` command
 
