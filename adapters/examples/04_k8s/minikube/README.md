@@ -13,7 +13,7 @@ Start `minikube` using driver `none` so we can access the host (IPv6 workaround)
 ```
 sudo apt-get install -y conntrack
 
-minikube start --driver=none --mount-string="/users/bart/flint-pfw:/users/bart/flint-pfw" --extra-config=apiserver.service-node-port-range=1-65535
+minikube start --driver=none --mount-string="$HOME/flint-pfw:/users/bart/flint-pfw" --mount --extra-config=apiserver.service-node-port-range=1-65535
 ```
 
 If you get *ERROR: Exiting due to HOST_KUBECONFIG_PERMISSION: Failed kubeconfig update: writing kubeconfig: Error writing file /users/../.kube/config: open /users/../.kube/config: permission denied*
